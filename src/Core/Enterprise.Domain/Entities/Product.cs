@@ -87,6 +87,7 @@ public class Product : AggregateRoot<Guid>
 
     public void IncreaseStock(int quantity, string reason)
     {
+        // Ensure stock deduction quantity is always strictly positive
         if (quantity <= 0)
             throw new DomainValidationException("Quantity to increase must be greater than zero.");
 
@@ -99,6 +100,7 @@ public class Product : AggregateRoot<Guid>
 
     public void DecreaseStock(int quantity, string reason)
     {
+        // Ensure stock deduction quantity is always strictly positive
         if (quantity <= 0)
             throw new DomainValidationException("Quantity to decrease must be greater than zero.");
 
