@@ -1,0 +1,30 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-and-test:
+    name: Build & Test Solution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore Enterprise.sln
+
+      - name: Build Solution
+        run: dotnet build Enterprise.sln --configuration Release --no-restore
+
+      - name: Run Tests
+        run: dotnet test Enterprise.sln --configuration Release --no-build --verbosity normal
