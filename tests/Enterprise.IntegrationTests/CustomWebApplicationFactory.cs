@@ -52,6 +52,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("UseInMemoryDatabase", "true");
+        builder.UseSetting("DatabaseProvider", "InMemory");
+
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["DatabaseProvider"] = "InMemory",
+                ["UseInMemoryDatabase"] = "true",
+                ["MongoDB:ConnectionString"] = ""
+            });
+        });
 
         builder.ConfigureServices(services =>
         {

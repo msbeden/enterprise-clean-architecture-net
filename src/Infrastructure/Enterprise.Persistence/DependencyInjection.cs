@@ -16,8 +16,12 @@ public static class DependencyInjection
     {
         services.AddScoped<AuditableEntityInterceptor>();
 
-        var databaseProvider = configuration["DatabaseProvider"]
-            ?? (string.Equals(configuration["UseInMemoryDatabase"], "true", StringComparison.OrdinalIgnoreCase) ? "InMemory" : "SqlServer");
+        var isInMemory = string.Equals(configuration["UseInMemoryDatabase"], "true", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(configuration["DatabaseProvider"], "InMemory", StringComparison.OrdinalIgnoreCase);
+
+        var databaseProvider = isInMemory
+            ? "InMemory"
+            : (configuration["DatabaseProvider"] ?? "SqlServer");
 
         if (string.Equals(databaseProvider, "InMemory", StringComparison.OrdinalIgnoreCase))
         {
