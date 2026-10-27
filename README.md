@@ -105,6 +105,8 @@ dotnet test
 
 ---
 
+
+> **Not:** Windows üzerinde Docker Desktop kullanırken RAM limitinizin en az 4GB olduğundan emin olun.
 ## 📄 Lisans
 
 Bu proje [MIT](LICENSE) lisansı altında geliştirilmiştir.
