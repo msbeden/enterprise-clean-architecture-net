@@ -1,6 +1,11 @@
 # Enterprise Clean Architecture (.NET 9 & React)
 
-Kurumsal ölçekli bir projede **Clean Architecture** ve **Domain-Driven Design (DDD)** pratiklerinin nasıl uygulanacağını göstermek amacıyla geliştirdiğim uçtan uca bir referans proje. 
+[![CI Pipeline](https://github.com/msbeden/enterprise-clean-architecture-net/actions/workflows/ci.yml/badge.svg)](https://github.com/msbeden/enterprise-clean-architecture-net/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+
+Kurumsal ölçekli bir projede **Clean Architecture** ve **Domain-Driven Design (DDD)** pratiklerinin nasıl uygulanacağını göstermek amacıyla geliştirdiğim uçtan uca bir referans proje.
 
 Backend tarafında modern **.NET 9 Web API**, ön yüzde ise **React (Vite + TypeScript)** ile hazırlanmış hem müşteri vitrini hem de temel bir yönetim paneli yer alıyor.
 
@@ -20,6 +25,14 @@ Geleneksel N-tier projelerde zamanla iş mantığı ile veritabanı katmanının
 
 ---
 
+## 📸 Ekran Görüntüleri
+
+| Vitrin                                    | Yönetim Paneli                           |
+| ----------------------------------------- | ---------------------------------------- |
+| ![Vitrin](docs/images/frontend_store.png) | ![Admin](docs/images/frontend_admin.png) |
+
+![API Dokümantasyonu](docs/images/backend.png)
+
 ## 🏗️ Katman Yapısı
 
 ```text
@@ -35,11 +48,34 @@ src/
     └── Enterprise.WebUI         # React 18, TypeScript, Tailwind CSS vitrin ve yönetim arayüzü
 ```
 
+## 🔄 İstek Akışı
+
+```mermaid
+flowchart LR
+    UI["React UI<br/>(Vite + TypeScript)"] -->|HTTP| API["Enterprise.WebAPI<br/>Controllers / Middleware"]
+    API -->|"Command / Query"| MED["MediatR"]
+
+    subgraph APP["Enterprise.Application"]
+        MED --> PIPE["Pipeline Behaviors<br/>(FluentValidation vb.)"]
+        PIPE --> H["Command / Query Handler"]
+    end
+
+    H -->|"Query: önbellek"| REDIS[("Redis")]
+    H -->|"EF Core"| SQL[("SQL Server")]
+    H --> DOM["Enterprise.Domain<br/>Entity + Domain Event"]
+
+    DOM -.->|"Domain Event"| BUS["MassTransit"]
+    BUS --> MQ{{"RabbitMQ"}}
+    MQ --> AUD["Audit Consumer"]
+    AUD --> MONGO[("MongoDB<br/>Audit Log")]
+```
+
 ---
 
 ## 🚀 Hızlı Başlangıç
 
 ### Gereksinimler
+
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 20+](https://nodejs.org/)
 - [Docker Desktop](https://www.docker.com/)
@@ -55,6 +91,7 @@ docker compose up -d
 > **Geliştirici Notu:** SQL Server konteynerinin tam hazır hale gelmesi ilk çalıştırmada makinenizin hızına bağlı olarak 10-15 saniye sürebilir. API konteyneri otomatik retry mekanizmasıyla migration'ları ve seed verileri basacaktır.
 
 Servis adresleri:
+
 - **Web UI:** [http://localhost:3000](http://localhost:3000)
 - **Web API:** [http://localhost:8080](http://localhost:8080)
 - **API Dokümantasyonu (Scalar):** [http://localhost:8080/scalar/v1](http://localhost:8080/scalar/v1)
@@ -105,8 +142,8 @@ dotnet test
 
 ---
 
-
 > **Not:** Windows üzerinde Docker Desktop kullanırken RAM limitinizin en az 4GB olduğundan emin olun.
+
 ## 📄 Lisans
 
 Bu proje [MIT](LICENSE) lisansı altında geliştirilmiştir.
